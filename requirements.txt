@@ -1,8 +1,8 @@
 fastapi
-uvicorn
-tensorflow==2.13.0
+uvicorn[standard]
+python-multipart
 opencv-python-headless==4.9.0.80
+tensorflow==2.13.0
 numpy==1.24.3
 pandas
-python-multipart
 h5py==3.9.0
