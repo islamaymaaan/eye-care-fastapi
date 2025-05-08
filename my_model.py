@@ -4,14 +4,18 @@ import cv2
 import numpy as np
 from tensorflow.keras.preprocessing import image
 
-# Load models once when the app starts
-model1 = keras.models.load_model('models/dataset1.h5')
-model2 = keras.models.load_model('models/eye_disease_model.h5')
-model3 = keras.models.load_model('models/model-3.h5')
+def load_model1():
+    return keras.models.load_model('models/dataset1.h5')
 
+def load_model2():
+    return keras.models.load_model('models/eye_disease_model.h5')
+
+def load_model3():
+    return keras.models.load_model('models/model-3.h5')
 
 def Integrated_Model(image_path):
     def model1_prediction(image_path):
+        model1 = load_model1()
         IMG_SIZE = 224
 
         if not os.path.exists(image_path):
@@ -35,6 +39,7 @@ def Integrated_Model(image_path):
 
     if result == 'ray':
         def model2_prediction(image_path):
+            model2 = load_model2()
             IMG_SIZE = 224
 
             image_data = cv2.imread(image_path)
@@ -53,6 +58,7 @@ def Integrated_Model(image_path):
 
         if result == 'diabetic_retinopathy':
             def model3_prediction(image_path):
+                model3 = load_model3()
                 img = image.load_img(image_path, target_size=(128, 128))
                 img_array = image.img_to_array(img)
                 img_array = np.expand_dims(img_array, axis=0) / 255.0
