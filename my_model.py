@@ -1,4 +1,3 @@
-
 def Integrated_Model(image_path):
     from tensorflow import keras
     import os
@@ -7,13 +6,16 @@ def Integrated_Model(image_path):
     from tensorflow.keras.preprocessing import image
 
     def model1_prediction(image_path):
-        model1 = keras.models.load_model(
-            'models/dataset1.h5')
+        model1 = keras.models.load_model('models/dataset1.h5')
         IMG_SIZE = 224
+
         if not os.path.exists(image_path):
-            print(f"Error: Image not found at {image_path}")
-            return
+            raise FileNotFoundError(f"Image not found: {image_path}")
+
         image_data = cv2.imread(image_path)
+        if image_data is None:
+            raise ValueError(f"Unable to read image: {image_path}")
+
         image_data = cv2.cvtColor(image_data, cv2.COLOR_BGR2RGB)
         image_resized = cv2.resize(image_data, (IMG_SIZE, IMG_SIZE))
         image_normalized = image_resized / 255.0
@@ -22,20 +24,19 @@ def Integrated_Model(image_path):
         class_names = ['other', 'ray']
         predicted_class = int(np.round(probabilities[0][0]))
         confidence = probabilities[0][0] if predicted_class == 1 else 1 - probabilities[0][0]
-        confidence *= 100
-        return class_names[predicted_class], confidence
+        return class_names[predicted_class], confidence * 100
 
     result, conf = model1_prediction(image_path)
 
     if result == 'ray':
         def model2_prediction(image_path):
-            model2 = keras.models.load_model(
-                'models/eye_disease_model.h5')
+            model2 = keras.models.load_model('models/eye_disease_model.h5')
             IMG_SIZE = 224
-            if not os.path.exists(image_path):
-                print(f"Error: Image not found at {image_path}")
-                return
+
             image_data = cv2.imread(image_path)
+            if image_data is None:
+                raise ValueError(f"Unable to read image: {image_path}")
+
             image_data = cv2.cvtColor(image_data, cv2.COLOR_BGR2RGB)
             image_resized = cv2.resize(image_data, (IMG_SIZE, IMG_SIZE))
             image_normalized = image_resized / 255.0
@@ -48,12 +49,10 @@ def Integrated_Model(image_path):
 
         if result == 'diabetic_retinopathy':
             def model3_prediction(image_path):
-                model3 = keras.models.load_model(
-                    'models/model-3.h5')
+                model3 = keras.models.load_model('models/model-3.h5')
                 img = image.load_img(image_path, target_size=(128, 128))
                 img_array = image.img_to_array(img)
-                img_array = np.expand_dims(img_array, axis=0)
-                img_array /= 255.
+                img_array = np.expand_dims(img_array, axis=0) / 255.0
                 predicted_classes = model3.predict(img_array)
                 predicted_class_index = np.argmax(predicted_classes)
                 class_labels = ['No_DR', 'Mild', 'Moderate', 'Severe', 'Proliferate_DR']
@@ -64,7 +63,9 @@ def Integrated_Model(image_path):
 
             result = model3_prediction(image_path)
             return result, float(conf)
+
         else:
             return result, float(conf)
+
     else:
         return 'not ray', float(conf)
