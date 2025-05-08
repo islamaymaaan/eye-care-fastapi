@@ -1,7 +1,7 @@
 fastapi
 uvicorn
-tensorflow
+tensorflow==2.13.0
 opencv-python-headless==4.9.0.80
-numpy
+numpy==1.24.4
 pandas
 python-multipart
