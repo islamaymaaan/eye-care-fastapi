@@ -4,7 +4,10 @@ import traceback
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 
+from my_model import Integrated_Model
+
 app = FastAPI()
+
 
 @app.post("/predict/")
 async def predict_image(file: UploadFile = File(...)):
@@ -13,7 +16,6 @@ async def predict_image(file: UploadFile = File(...)):
         with open(temp_file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        from my_model import Integrated_Model
         result, confidence = Integrated_Model(temp_file_path)
         os.remove(temp_file_path)
 
@@ -25,6 +27,7 @@ async def predict_image(file: UploadFile = File(...)):
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/check-model/")
 def check_model():
