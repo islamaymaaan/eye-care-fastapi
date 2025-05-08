@@ -23,3 +23,8 @@ async def predict_image(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/check-model/")
+def check_model():
+    path = "models/dataset1.h5"
+    return {"exists": os.path.exists(path)}
