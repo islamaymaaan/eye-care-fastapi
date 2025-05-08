@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 import shutil
@@ -16,6 +15,11 @@ async def predict_image(file: UploadFile = File(...)):
         from my_model import Integrated_Model
         result, confidence = Integrated_Model(temp_file_path)
         os.remove(temp_file_path)
-        return JSONResponse(content={"result": result, "confidence": confidence})
+
+        return JSONResponse(content={
+            "DiagnosisResult": result,
+            "ConfidenceScore": confidence
+        })
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
