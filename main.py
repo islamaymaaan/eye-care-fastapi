@@ -1,27 +1,11 @@
 import os
-import tarfile
 import shutil
+import traceback
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 
-# ✅ فك الضغط تلقائيًا عند التشغيل لأول مرة
-if not os.path.exists("models"):
-    tar_path = "output.tar.gz"
-    if os.path.exists(tar_path):
-        print("📦 Extracting output.tar.gz...")
-        try:
-            with tarfile.open(tar_path) as tar:
-                tar.extractall()
-            print("✅ Extraction complete.")
-        except Exception as e:
-            print(f"❌ Extraction failed: {e}")
-    else:
-        print("⚠️ output.tar.gz not found.")
-
-# ✅ إنشاء تطبيق FastAPI
 app = FastAPI()
 
-# ✅ Endpoint رئيسي للتشخيص
 @app.post("/predict/")
 async def predict_image(file: UploadFile = File(...)):
     try:
@@ -39,9 +23,9 @@ async def predict_image(file: UploadFile = File(...)):
         })
 
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-# ✅ Endpoint بسيط للتأكد من وجود الموديل
 @app.get("/check-model/")
 def check_model():
     path = "models/dataset1.h5"
